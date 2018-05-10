@@ -1,0 +1,58 @@
+{
+  "name": "cordova-sqlite-utility",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "sqlite",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-windows",
+    "cordova",
+    "utility",
+    "ionic"
+  ],
+  "author": {
+    "name": "Justin Lettau",
+    "email": "me@justinlettau.com",
+    "url": "http://justinlettau.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/justinlettau/cordova-sqlite-devtools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justinlettau/cordova-sqlite-devtools"
+  },
+  "bugs": {
+    "url": "https://github.com/justinlettau/cordova-sqlite-devtools/issues"
+  },
+  "scripts": {
+    "lint": "tslint -c ./tslint.json -p ./tsconfig.json",
+    "build": "tsc -p ./tsconfig.json",
+    "release": "standard-version",
+    "test": "nyc jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
+  },
+  "files": [
+    "dist/"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "cordova-sqlite-devtools": "1.x"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.8.7",
+    "codecov": "^3.0.2",
+    "jasmine": "^3.1.0",
+    "nyc": "^11.7.02",
+    "standard-version": "^4.3.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.10.0",
+    "tslint-config-unicorn-science": "^1.3.0",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "ts-util-is": "^1.1.3"
+  }
+}
