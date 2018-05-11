@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/justinlettau/cordova-sqlite-utility.svg?branch=master)](https://travis-ci.org/justinlettau/cordova-sqlite-utility)
 [![Dependency Status](https://david-dm.org/justinlettau/cordova-sqlite-utility.svg)](https://david-dm.org/justinlettau/cordova-sqlite-utility)
 [![Dev Dependency Status](https://david-dm.org/justinlettau/cordova-sqlite-utility/dev-status.svg)](https://david-dm.org/justinlettau/cordova-sqlite-utility?type=dev)
+[![codecov](https://codecov.io/gh/justinlettau/cordova-sqlite-utility/branch/master/graph/badge.svg)](https://codecov.io/gh/justinlettau/cordova-sqlite-utility)
 
 # Cordova SQLite Utility
 Utilities to make working with [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) easier.
