@@ -1,2 +1,4 @@
 export * from './interfaces';
-export * from './prepare';
+export * from './sqlite';
+export * from './sqlite-database';
+export * from './sqlite-utility';
