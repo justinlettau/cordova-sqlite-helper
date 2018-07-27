@@ -1,4 +1,10 @@
-import { SQLiteDatabaseConfig, SQLiteResult, SQLiteResultSet, SQLiteResultSetRowList, SQLiteStatement } from './interfaces';
+import {
+  SQLiteDatabaseConfig,
+  SQLiteResult,
+  SQLiteResultSet,
+  SQLiteResultSetRowList,
+  SQLiteStatement
+} from './interfaces';
 import { SQLiteUtility } from './sqlite-utility';
 
 /**
@@ -62,7 +68,7 @@ export class SQLiteDatabase {
 
     const [sql, params] = SQLiteUtility.prepare(statement);
 
-    const promise = new Promise<SQLiteResultSet>((resolve, reject) => {
+    const promise: Promise<SQLiteResultSet> = new Promise((resolve, reject) => {
       this.db.executeSql(sql, params, resolve, reject);
     });
 
@@ -104,7 +110,7 @@ export class SQLiteDatabase {
     const prepared: any[][] = [];
     statements.forEach(statement => prepared.push(SQLiteUtility.prepare(statement)));
 
-    const promise = new Promise<void>((resolve, reject) => {
+    const promise: Promise<void> = new Promise<void>((resolve, reject) => {
       this.db.sqlBatch(prepared, resolve, reject);
     });
 
@@ -124,7 +130,7 @@ export class SQLiteDatabase {
   private rowListToArray(rows: SQLiteResultSetRowList): any[] {
     const output: any[] = [];
 
-    for (let i = 0; i < rows.length; i++) {
+    for (let i: number = 0; i < rows.length; i++) {
       output.push(rows.item(i));
     }
 
