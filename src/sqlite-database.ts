@@ -24,6 +24,11 @@ export class SQLiteDatabase {
   public config: SQLiteDatabaseConfig;
 
   /**
+   * Indicates if debug mode is enabled.
+   */
+  public debug: boolean = true;
+
+  /**
    * Match if the string starts with "SELECT".
    */
   private readonly startsWithSelect: RegExp = /^SELECT/i;
@@ -52,27 +57,39 @@ export class SQLiteDatabase {
    * @param statement Statement to execute.
    */
   public execute<T>(statement: SQLiteStatement): Promise<SQLiteResult | T[]> {
+    const id: string = 'Anonymous execute';
+    this.logStart(id);
+
     const [sql, params] = SQLiteUtility.prepare(statement);
 
     const promise = new Promise<SQLiteResultSet>((resolve, reject) => {
       this.db.executeSql(sql, params, resolve, reject);
     });
 
-    return promise.then(result => {
+    return promise
+      .then(result => {
 
-      /**
-       * An INSERT, UPDATE, or DELETE that does not affect any rows will return the same results as a SELECT that
-       * returns no rows. Need to analysis the query in this situation to know what to return.
-       */
-      if (result.insertId || result.rowsAffected || !this.startsWithSelect.test(sql)) {
-        return {
-          insertId: result.insertId,
-          rowsAffected: result.rowsAffected
-        };
-      } else {
-        return this.rowListToArray(result.rows);
-      }
-    });
+        /**
+         * An INSERT, UPDATE, or DELETE that does not affect any rows will return the same results as a SELECT that
+         * returns no rows. Need to analysis the query in this situation to know what to return.
+         */
+        if (result.insertId || result.rowsAffected || !this.startsWithSelect.test(sql)) {
+          return {
+            insertId: result.insertId,
+            rowsAffected: result.rowsAffected
+          };
+        } else {
+          return this.rowListToArray(result.rows);
+        }
+      })
+      .then(result => {
+        this.logEnd(id);
+        return result;
+      })
+      .catch(error => {
+        this.logEnd(id);
+        throw error;
+      });
   }
 
   /**
@@ -81,11 +98,22 @@ export class SQLiteDatabase {
    * @param statements Statements to execute.
    */
   public batch(statements: SQLiteStatement[]): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const prepared: any[][] = [];
-      statements.forEach(statement => prepared.push(SQLiteUtility.prepare(statement)));
+    const id: string = 'Anonymous batch';
+    this.logStart(id);
+
+    const prepared: any[][] = [];
+    statements.forEach(statement => prepared.push(SQLiteUtility.prepare(statement)));
+
+    const promise = new Promise<void>((resolve, reject) => {
       this.db.sqlBatch(prepared, resolve, reject);
     });
+
+    return promise
+      .then(() => this.logEnd(id))
+      .catch(error => {
+        this.logEnd(id);
+        throw error;
+      });
   }
 
   /**
@@ -101,5 +129,31 @@ export class SQLiteDatabase {
     }
 
     return output;
+  }
+
+  /**
+   * Timer log start.
+   *
+   * @param id Timer unique id.
+   */
+  private logStart(id: string): void {
+    if (!this.debug) {
+      return;
+    }
+
+    console.time(id);
+  }
+
+  /**
+   * Timer log end.
+   *
+   * @param id Timer unique id.
+   */
+  private logEnd(id: string): void {
+    if (!this.debug) {
+      return;
+    }
+
+    console.timeEnd(id);
   }
 }
