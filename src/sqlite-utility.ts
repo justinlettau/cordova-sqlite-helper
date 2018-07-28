@@ -1,6 +1,7 @@
 import { isArray, isBoolean, isDate, isUndefined } from 'ts-util-is';
 
 import { SQLiteParams, SQLitePrepared, SQLiteStatement } from './interfaces';
+import { SQLiteStore } from './sqlite-store';
 
 /**
  * SQLite utility methods.
@@ -21,7 +22,7 @@ export class SQLiteUtility {
   public static prepare(statement: SQLiteStatement): SQLitePrepared {
     let match: RegExpExecArray;
     let outputParams: any[] = [];
-    let sql: string = statement.sql;
+    let sql: string = SQLiteStore.get(statement.sql) || statement.sql;
     const params: SQLiteParams = statement.params || {};
     const csvParams: any[][] = [];
 

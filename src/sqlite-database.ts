@@ -63,7 +63,8 @@ export class SQLiteDatabase {
    * @param statement Statement to execute.
    */
   public execute<T>(statement: SQLiteStatement): Promise<SQLiteResult | T[]> {
-    const id: string = 'Anonymous execute';
+    const now: number = Date.now();
+    const id: string = `Anonymous execute (${now})`;
     this.logStart(id);
 
     const [sql, params] = SQLiteUtility.prepare(statement);
@@ -104,7 +105,8 @@ export class SQLiteDatabase {
    * @param statements Statements to execute.
    */
   public batch(statements: SQLiteStatement[]): Promise<void> {
-    const id: string = 'Anonymous batch';
+    const now: number = Date.now();
+    const id: string = `Anonymous batch (${now})`;
     this.logStart(id);
 
     const prepared: any[][] = [];

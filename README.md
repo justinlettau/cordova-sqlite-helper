@@ -11,6 +11,7 @@ easier. Features include:
 - **Promise** based API.
 - **Named parameters** for SQLite statements.
 - Safely handle JavaScript **type conversion** to SQLite counterparts.
+- Store **SQL statements** for reuse.
 
 # Installation
 ```
@@ -23,6 +24,11 @@ npm install --save cordova-sqlite-utility
 
 ### Open
 Open or create a SQLite database file.
+
+| Argument | Description             | Type                   |
+|----------|-------------------------|------------------------|
+| `config` | Database configuration. | `SQLiteDatabaseConfig` |
+
 When opened, the database is set as the `current` database and subsequent calls on that `SQLite` instance are executed
 against that database automatically.
 
@@ -30,30 +36,33 @@ against that database automatically.
 import { SQLite } from 'cordova-sqlite-utility';
 
 const sqlite = new SQLite();
+
 sqlite.open({ name: 'Awesome.db' })
   .then(db => console.log('Database opened!'));
 ```
-
-| Argument | Description             | Type                   |
-|----------|-------------------------|------------------------|
-| `config` | Database configuration. | `SQLiteDatabaseConfig` |
 
 ### Close
 Close the `current` database.
 
 ```js
-sqlite.close();
+sqlite.close()
+  .then(() => console.log('Database closed!'));
 ```
 
 ### Remove
 Delete the `current` database.
 
 ```js
-sqlite.remove();
+sqlite.remove()
+  .then(() => console.log('Database deleted!'));
 ```
 
 ### Execute
 Execute a SQL statement on the `current` database.
+
+| Argument    | Description           | Type              |
+|-------------|-----------------------|-------------------|
+| `statement` | Statement to execute. | `SQLiteStatement` |
 
 `INSERT`, `UPDATE`, and `DELETE` statements return a `SQLiteResult` object. `SELECT` statements return an array of
 objects. Use the generic overload to specify the return object type (`T[]`) for `SELECT` statements.
@@ -78,12 +87,25 @@ sqlite.execute({
 // => { insertId: 1, rowsAffected: 1 }
 ```
 
-| Argument    | Description           | Type              |
-|-------------|-----------------------|-------------------|
-| `statement` | Statement to execute. | `SQLiteStatement` |
+Since the `statement` is prepared with `SQLite.prepare` before execution, the `sql` property can be either a stored
+statement (set via `SQLiteStore.set`) or inline SQL.
+
+```js
+sqlite.execute<IAwesome>({
+  sql: 'Awesome_ReadById',
+  params: {
+    id: 83
+  }
+}).then(data => console.log(data));
+// => IAwesome[]
+```
 
 ### Batch
 Execute a batch of SQL statements on the `current` database.
+
+| Argument     | Description            | Type                |
+|--------------|------------------------|---------------------|
+| `statements` | Statements to execute. | `SQLiteStatement[]` |
 
 ```js
 sqlite.batch([
@@ -101,15 +123,62 @@ sqlite.batch([
 ]).then(() => console.log('Batch complete!'));
 ```
 
-| Argument     | Description            | Type                |
-|--------------|------------------------|---------------------|
-| `statements` | Statements to execute. | `SQLiteStatement[]` |
+Like `execute`, the `batch` method prepares statements with `SQLite.prepare`. So, the `sql` property can be either a
+stored statement (set via `SQLiteStore.set`) or inline SQL.
+
+## SQLiteStore
+Store SQL statements for reuse.
+
+### Set
+Add SQL statements to the store.
+
+```js
+import { SQLiteStore } from 'cordova-sqlite-utility';
+
+SQLiteStore.set({
+  'Awesome_Create': 'INSERT INTO AwesomeTable VALUES (@name)',
+  'Awesome_ReadById': 'SELECT * FROM AwesomeTable WHERE id = @id'
+});
+```
+
+Storing SQL statements in files is often more manageable. If you'd like to keep your SQL statements in files, like
+this ...
+
+```
+./sqlite
+  Awesome_ReadById.sql
+  Awesome_Create.sql
+  ...
+```
+
+... then [sqlite-cordova-devtools](https://github.com/justinlettau/cordova-sqlite-devtools) can ready all you SQL files
+for easy addition to the store.
+
+```js
+import { SQLiteStore } from 'cordova-sqlite-utility';
+
+SQLiteStore.set(window['_sqlite']);
+```
+
+### Get
+Get a stored SQL statement by name.
+
+```js
+import { SQLiteStore } from 'cordova-sqlite-utility';
+
+const sql = SQLiteStore.get('Awesome_ReadById');
+// => 'SELECT * FROM AwesomeTable WHERE id = @id'
+```
 
 ## SQLiteUtility
 Utility methods can be used outside of the API, for direct use with `sqlitePlugin`.
 
 ### Prepare
 Safely transform named parameters and unsupported data types.
+
+| Argument    | Description           | Type              |
+|-------------|-----------------------|-------------------|
+| `statement` | Statement to prepare. | `SQLiteStatement` |
 
 ```js
 import { SQLiteUtility } from 'cordova-sqlite-utility';
@@ -130,6 +199,17 @@ db.executeSql(...prepared, results => {
 });
 ```
 
-| Argument    | Description           | Type              |
-|-------------|-----------------------|-------------------|
-| `statement` | Statement to prepare. | `SQLiteStatement` |
+The statement's `sql` property is used to first check the `SQLite` store for a stored statement. If no stored statement
+is found the value itself is used.
+
+```js
+const prepared = SQLiteUtility.prepare({
+  sql: 'Awesome_ReadById',
+  params: {
+    id: 83
+  }
+});
+
+console.log(prepared);
+// => ['SELECT * FROM AwesomeTable WHERE id = ?', [83]]
+```
