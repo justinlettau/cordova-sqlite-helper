@@ -39,7 +39,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "cordova-sqlite-storage": "2.x"
+    "cordova-sqlite-storage": "3.x"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.14",
