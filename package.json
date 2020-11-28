@@ -1,6 +1,6 @@
 {
   "name": "cordova-sqlite-utility",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Utilities to make working with cordova-sqlite-storage easier.",
   "keywords": [
     "sqlite",
