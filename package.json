@@ -15,7 +15,7 @@
   "author": {
     "name": "Justin Lettau",
     "email": "me@justinlettau.com",
-    "url": "http://justinlettau.com"
+    "url": "https://justinlettau.com"
   },
   "license": "MIT",
   "homepage": "https://github.com/justinlettau/cordova-sqlite-utility",
@@ -27,11 +27,12 @@
     "url": "https://github.com/justinlettau/cordova-sqlite-utility/issues"
   },
   "scripts": {
-    "lint": "tslint -c ./tslint.json -p ./tsconfig.json",
+    "lint": "eslint . --ext .js,.ts",
+    "test": "jest",
     "build": "tsc -p ./tsconfig.json",
     "release": "standard-version",
-    "test": "nyc jasmine JASMINE_CONFIG_PATH=jasmine.json",
-    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
+    "prepublishOnly": "npm run build",
+    "format": "prettier --write ."
   },
   "files": [
     "dist/"
@@ -42,17 +43,19 @@
     "cordova-sqlite-storage": "2.x"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.14",
-    "codecov": "^3.5.0",
-    "jasmine": "^3.4.0",
-    "nyc": "^14.1.1",
-    "standard-version": "^7.0.0",
+    "@types/jest": "^26.0.15",
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "standard-version": "^9.0.0",
+    "ts-jest": "^26.4.4",
     "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "tslint-config-unicorn-science": "^1.3.0",
-    "typescript": "^3.5.3"
+    "typescript": "^4.1.2"
   },
   "dependencies": {
-    "ts-util-is": "^1.1.3"
+    "ts-util-is": "^1.2.1"
   }
 }

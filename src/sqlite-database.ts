@@ -3,7 +3,7 @@ import {
   SQLiteResult,
   SQLiteResultSet,
   SQLiteResultSetRowList,
-  SQLiteStatement
+  SQLiteStatement,
 } from './interfaces';
 import { SQLiteUtility } from './sqlite-utility';
 
@@ -15,7 +15,7 @@ export class SQLiteDatabase {
     this.db = db;
     this.config = {
       location: 'default',
-      ...config
+      ...config,
     };
   }
 
@@ -32,7 +32,7 @@ export class SQLiteDatabase {
   /**
    * Indicates if debug mode is enabled.
    */
-  public debug: boolean = true;
+  public debug = true;
 
   /**
    * Match if the string starts with "SELECT".
@@ -64,7 +64,7 @@ export class SQLiteDatabase {
    */
   public execute<T>(statement: SQLiteStatement): Promise<SQLiteResult | T[]> {
     const now: number = Date.now();
-    const id: string = `Anonymous execute (${now})`;
+    const id = `Anonymous execute (${now})`;
     this.logStart(id);
 
     const [sql, params] = SQLiteUtility.prepare(statement);
@@ -74,26 +74,29 @@ export class SQLiteDatabase {
     });
 
     return promise
-      .then(result => {
-
+      .then((result) => {
         /**
          * An INSERT, UPDATE, or DELETE that does not affect any rows will return the same results as a SELECT that
          * returns no rows. Need to analysis the query in this situation to know what to return.
          */
-        if (result.insertId || result.rowsAffected || !this.startsWithSelect.test(sql)) {
+        if (
+          result.insertId ||
+          result.rowsAffected ||
+          !this.startsWithSelect.test(sql)
+        ) {
           return {
             insertId: result.insertId,
-            rowsAffected: result.rowsAffected
+            rowsAffected: result.rowsAffected,
           };
         } else {
           return this.rowListToArray(result.rows);
         }
       })
-      .then(result => {
+      .then((result) => {
         this.logEnd(id);
         return result;
       })
-      .catch(error => {
+      .catch((error) => {
         this.logEnd(id);
         throw error;
       });
@@ -106,11 +109,13 @@ export class SQLiteDatabase {
    */
   public batch(statements: SQLiteStatement[]): Promise<void> {
     const now: number = Date.now();
-    const id: string = `Anonymous batch (${now})`;
+    const id = `Anonymous batch (${now})`;
     this.logStart(id);
 
     const prepared: any[][] = [];
-    statements.forEach(statement => prepared.push(SQLiteUtility.prepare(statement)));
+    statements.forEach((statement) =>
+      prepared.push(SQLiteUtility.prepare(statement))
+    );
 
     const promise: Promise<void> = new Promise<void>((resolve, reject) => {
       this.db.sqlBatch(prepared, resolve, reject);
@@ -118,7 +123,7 @@ export class SQLiteDatabase {
 
     return promise
       .then(() => this.logEnd(id))
-      .catch(error => {
+      .catch((error) => {
         this.logEnd(id);
         throw error;
       });
@@ -132,7 +137,7 @@ export class SQLiteDatabase {
   private rowListToArray(rows: SQLiteResultSetRowList): any[] {
     const output: any[] = [];
 
-    for (let i: number = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
       output.push(rows.item(i));
     }
 

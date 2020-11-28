@@ -1,4 +1,8 @@
-import { SQLiteDatabaseConfig, SQLiteResult, SQLiteStatement } from './interfaces';
+import {
+  SQLiteDatabaseConfig,
+  SQLiteResult,
+  SQLiteStatement,
+} from './interfaces';
 import { SQLiteDatabase } from './sqlite-database';
 
 declare const sqlitePlugin: any;
@@ -7,7 +11,6 @@ declare const sqlitePlugin: any;
  * SQLite utility.
  */
 export class SQLite {
-
   /**
    * Currently active SQLite database.
    */
@@ -20,10 +23,14 @@ export class SQLite {
    */
   public open(config: SQLiteDatabaseConfig): Promise<SQLiteDatabase> {
     return new Promise((resolve, reject) => {
-      sqlitePlugin.openDatabase(config, db => {
-        this.current = new SQLiteDatabase(config, db);
-        resolve(this.current);
-      }, reject);
+      sqlitePlugin.openDatabase(
+        config,
+        (db) => {
+          this.current = new SQLiteDatabase(config, db);
+          resolve(this.current);
+        },
+        reject
+      );
     });
   }
 

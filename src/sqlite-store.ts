@@ -2,11 +2,10 @@
  * Store SQL statements for reuse.
  */
 export class SQLiteStore {
-
   /**
    * Stored statements.
    */
-  private static statements: { [key: string]: string; } = {};
+  private static statements: { [key: string]: string } = {};
 
   /**
    * Get a stored SQL statement by name.
@@ -26,7 +25,7 @@ export class SQLiteStore {
    *
    * @param statements Statements to add.
    */
-  public static set(statements: { [key: string]: string; }): void {
+  public static set(statements: { [key: string]: string }): void {
     if (!statements) {
       return;
     }

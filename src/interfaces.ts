@@ -47,6 +47,6 @@ export interface SQLiteResultSet {
  * Result set row list.
  */
 export interface SQLiteResultSetRowList {
-  item: (index: number) => object;
+  item: (index: number) => Record<string, unknown>;
   length: number;
 }
