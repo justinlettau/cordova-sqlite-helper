@@ -40,7 +40,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "cordova-sqlite-storage": "2.x"
+    "cordova-sqlite-storage": "5.x"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
